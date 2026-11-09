@@ -22,7 +22,7 @@ SDK="$HOME/Android/Sdk"
 NDK_VERSION="29.0.13846066"
 NDK="$SDK/ndk/$NDK_VERSION"
 
-APK_SOURCE="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk"
+APK_SOURCE="src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk"
 ARTIFACT_DIR="release-artifacts"
 APK_NAME="kakeibo-${TAG}-android-unsigned.apk"
 APK_DEST="$ARTIFACT_DIR/$APK_NAME"
