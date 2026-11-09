@@ -14,9 +14,27 @@ val tauriProperties = Properties().apply {
     }
 }
 
+val releaseStoreFile =
+    providers.gradleProperty("KAKEIBO_STORE_FILE").orNull
+        ?: error("KAKEIBO_STORE_FILE is not configured")
+
+val releaseStorePassword =
+    providers.gradleProperty("KAKEIBO_STORE_PASSWORD").orNull
+        ?: error("KAKEIBO_STORE_PASSWORD is not configured")
+
+val releaseKeyAlias =
+    providers.gradleProperty("KAKEIBO_KEY_ALIAS").orNull
+        ?: error("KAKEIBO_KEY_ALIAS is not configured")
+
+val releaseKeyPassword =
+    providers.gradleProperty("KAKEIBO_KEY_PASSWORD").orNull
+        ?: error("KAKEIBO_KEY_PASSWORD is not configured")
+
+
 android {
     compileSdk = 37
     namespace = "com.zakkth.kakeibo"
+
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.zakkth.kakeibo"
@@ -25,6 +43,16 @@ android {
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(releaseStoreFile)
+            storePassword = releaseStorePassword
+            keyAlias = releaseKeyAlias
+            keyPassword = releaseKeyPassword
+        }
+    }
+
     buildTypes {
         getByName("debug") {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
@@ -38,22 +66,28 @@ android {
                 jniLibs.keepDebugSymbols.add("*/x86_64/*.so")
             }
         }
+
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+
             optimization {
-               enable = true
+                enable = true
             }
+
             proguardFiles(
                 *fileTree(".") {
-                  include("**/*.pro")
-                  exclude("build/**")
+                    include("**/*.pro")
+                    exclude("build/**")
                 }.files.toTypedArray()
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     buildFeatures {
         buildConfig = true
     }
